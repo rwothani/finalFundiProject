@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .no-print {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Users</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Fingerprint ID</th>
+                    <th>Category</th>
+                    <th class="no-print">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.fingerprint_id }}</td>
+                    <td>{{ user.category }}</td>
+                    <td class="no-print">
+                        <a href="{{ url_for('update_user', user_id=user.id) }}">Edit</a>
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display: inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        
+        <div class="print-button">
+            <button onclick="window.print()">Print</button>
+        </div>
+
+        <div class="no-print">
+            <a href="{{ url_for('add_user') }}">Add New User</a>
+            <br><br>
+            <a href="{{ url_for('logout') }}">Logout</a>
+            <br><br>
+            <a href="{{ url_for('attendance_log') }}">Back to Attendance Log</a>
+        </div>
+
+    </div>
+</body>
+</html>

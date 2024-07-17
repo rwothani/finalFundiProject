@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Manage Users</title>
+</head>
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='images/bot_image.png') }}" alt="FundiBots" class="header-image">
+        </div>
+        <div class="input-group">
+            <input type="text" id="date-input" placeholder="Date">
+            <input type="text" placeholder="Location">
+        </div>
+        <div class="input-group">
+            <a href="{{ url_for('logout') }}" class="nav-button">log out</a>
+            <a href="{{ url_for('manage_users') }}" class="nav-button">manage users</a>
+            <a href="{{ url_for('search') }}" class="nav-button">search</a>
+        </div>
+
+        <!-- <h1>Manage Users</h1> -->
+        <h2>Add User</h2>
+        <form action="{{ url_for('add_user') }}" method="post" class="input-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="fingerprint_id">Fingerprint ID:</label>
+            <input type="number" id="fingerprint_id" name="fingerprint_id" required>
+            <label for="category">Category:</label>
+            <select id="category" name="category" required>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="save-button">Add User</button>
+        </form>
+
+        <h2>Existing Users</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Fingerprint ID</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.fingerprint_id }}</td>
+                <td>{{ user.category }}</td>
+                <td>
+                    <a href="{{ url_for('update_user', user_id=user.id) }}" class="nav-button">Edit</a>
+                    <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="nav-button">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{{ url_for('attendance_log') }}" class="nav-button">Back to Attendance Log</a>
+    </div>
+
+    <script>
+        // Function to insert the current date into the date input field
+        function insertCurrentDate() {
+            const dateInput = document.getElementById('date-input');
+            const currentDate = new Date().toISOString().split('T')[0];
+            dateInput.value = currentDate;
+        }
+
+        // Call the function when the page loads
+        window.onload = insertCurrentDate;
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Fundi Bots Design</title>
+</head>
+<body>
+    <div class="container">
+        <div> class="image-container">
+            <img src="{{ url_for('static', filename='images/bot_image.png') }}" alt="Fundi Bots" class="header-image">
+        </div>
+        <div class="input-group">
+            <input type="text" id="date-input" placeholder="Date">
+            <input type="text" placeholder="Onono Rd plot 26A">
+        </div>
+        
+        <div class="input-group">
+            <input type="text" placeholder="Welcome to the Fundi Attendance System">
+        </div>
+
+        <a href="{{ url_for('login') }}" class="nav-button">login</a>
+    </div>
+
+    <script>
+        // Function to insert the current date into the date input field
+        function insertCurrentDate() {
+            const dateInput = document.getElementById('date-input');
+            const currentDate = new Date().toISOString().split('T')[0];
+            dateInput.value = currentDate;
+        }
+
+        // Call the function when the page loads
+        window.onload = insertCurrentDate;
+    </script>
+</body>
+</html>

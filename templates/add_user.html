@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Fundi Bots Design</title>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/bot_image.png') }}" alt="Fundi Bots" class="header-image">
+        <div class="input-group">
+            <input type="text" id="date-input" placeholder="Date">
+            <input type="text" placeholder="Onono Rd plot 26A">
+        </div>
+        <div class="input-group">
+            <a href="{{ url_for('logout') }}" class="nav-button">log out</a>
+            <a href="{{ url_for('manage_users') }}" class="nav-button">manage users</a>
+            <a href="{{ url_for('search') }}" class="nav-button">search</a>
+        </div>
+        <div class="input-group">
+            <input type="text" placeholder="name">
+            <input type="text" placeholder="category">
+            <input type="text" placeholder="ID">
+        </div>
+        <button class="save-button">save</button>
+    </div>
+
+    <script>
+        // Function to insert the current date into the date input field
+        function insertCurrentDate() {
+            const dateInput = document.getElementById('date-input');
+            const currentDate = new Date().toISOString().split('T')[0];
+            dateInput.value = currentDate;
+        }
+
+        // Call the function when the page loads
+        window.onload = insertCurrentDate;
+    </script>
+</body>
+</html>
