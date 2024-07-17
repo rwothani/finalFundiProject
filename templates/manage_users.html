@@ -31,39 +31,44 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>Accelerating Science Learning In Africa</h1>
+        <p class="location-info">Onono Rd Plot 26A</p>
+    </div>
     <div class="container">
         <h1>Manage Users</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Fingerprint ID</th>
-                    <th>Category</th>
-                    <th class="no-print">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.fingerprint_id }}</td>
-                    <td>{{ user.category }}</td>
-                    <td class="no-print">
-                        <a href="{{ url_for('update_user', user_id=user.id) }}">Edit</a>
-                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display: inline;">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div id="users">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Fingerprint ID</th>
+                        <th>Category</th>
+                        <th class="no-print">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.fingerprint_id }}</td>
+                        <td>{{ user.category }}</td>
+                        <td class="no-print">
+                            <a href="{{ url_for('update_user', user_id=user.id) }}">Edit</a>
+                            <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display: inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-        
         <div class="print-button">
-            <button onclick="window.print()">Print</button>
+            <button onclick="printTable()">Print</button>
         </div>
 
         <div class="no-print">
@@ -75,5 +80,29 @@
         </div>
 
     </div>
+    <script>
+        function printTable() {
+            const usersDiv = document.getElementById('users');
+            const printContent = usersDiv.innerHTML;
+            const originalContent = document.body.innerHTML;
+
+            // Create a header for printing
+            const printHeader = `
+                <div style="text-align: center;">
+                    <h1 style="color: gray;">Accelerating Science Learning In Africa</h1>
+                    <p>${new Date().toLocaleString()}</p>
+                </div>
+            `;
+
+            // Set the body's HTML to the header and the print content
+            document.body.innerHTML = printHeader + printContent;
+
+            window.print();
+
+            // Restore the original body content
+            document.body.innerHTML = originalContent;
+            window.location.reload();
+        }
+    </script>
 </body>
 </html>

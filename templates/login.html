@@ -1,12 +1,86 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* Adjustments to the layout */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2; /* Light gray background */
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #f58320;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin-bottom: 10px;
+        }
+
+        .location-info {
+            font-style: italic;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff; /* White background */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+            text-align: center; /* Center align container content */
+        }
+
+        .container form {
+            text-align: left; /* Left align form elements */
+        }
+
+        .container h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            text-align: left; /* Left align labels */
+        }
+
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #e82029;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #f58320;
+        }
+    </style>
 </head>
 <body>
+    <div class="header">
+        <h1>Accelerating Science Learning In Africa</h1>
+        <p class="location-info">Onono Rd Plot 26A</p>
+    </div>
     <div class="container">
         <form action="{{ url_for('login') }}" method="post">
             <h2>Admin Login</h2>

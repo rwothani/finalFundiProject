@@ -1,48 +1,57 @@
-body {
-    font-family: Arial, sans-serif;
+/* Global Reset and Setup */
+* {
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url('../images/Designer\ \(12\).jpeg');
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('../images/Designer\ \(12\).jpeg'); 
     background-size: cover;
+    /* background-color: rgba(0, 0, 0, 1); */
+    opacity: 2;
+}
+
+.header {
+    background-color: #f58320;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-content {
+    max-width: 800px;
+    margin: 0 auto; /* Center align content */
+}
+
+.location-info {
+    margin-top: 5px; 
+}
+
+.input-group {
+    margin-top: 20px; /* Space between header content and buttons */
+}
+
+.spacer {
+    height: 90px; /* Adjust */
 }
 
 .container {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 20px;
+    margin-top: 160px; /* Space between spacer and container */
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-.image-container {
-    border-radius: 20px;
-    overflow: hidden; /* Ensures the image is clipped to the border radius */
-    display: inline-block; /* Shrink-wrap the image */
-    margin-bottom: 20px; /* Add space below the image */
-    padding-top: 20px;
-}
-
-.header-image {
-    display: block;
-    margin: 0 auto 20px auto;
-    width: 200px;
-}
-
-.input-group {
-    margin-bottom: 20px;
-}
-
-input[type="text"], select {
-    border: 2px solid #e82029;
-    border-radius: 20px;
-    padding: 10px;
-    margin: 5px;
-    width: calc(33% - 20px);
-    text-align: center;
+.input-group form {
+    margin-top: 20px; /* Space between form and existing users */
 }
 
 .nav-button {
@@ -78,9 +87,30 @@ input[type="text"], select {
     background-color: #f58320;
 }
 
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; /* Space above the table */
+}
+
+th, td {
+    border: 1px solid #ddd; /* Light gray border */
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2; /* Light gray background for headers */
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row background color */
+}
+
+
 @media (max-width: 600px) {
-    input[type="text"], select {
-        width: calc(100% - 20px);
-        margin-bottom: 10px;
+    .input-group form {
+        margin-top: 10px; /* Adjust spacing for smaller screens */
     }
 }

@@ -48,9 +48,6 @@ class Attendance(db.Model):
 
 @app.route('/')
 def index():
-    # if 'admin' not in session:
-    #     return redirect(url_for('login'))
-    # attendance_records = Attendance.query.all()
     return render_template('index.html')  # , attendance=attendance_records)
 
 @app.route('/users')
@@ -146,20 +143,36 @@ def add_attendance_record(fingerprint_id, status):
 #route to display record
 @app.route('/attendance_log')
 def attendance_log():
-    flash("Attendance log route hit")  # line
     if 'admin' not in session:
         return redirect(url_for('login'))
     attendance_records = Attendance.query.all()
+    # flash(f"Found {len(attendance_records)} attendance records")
     return render_template('attendance_log.html', attendance=attendance_records)
 
+#point to handle the reception of print (still in progress)
+@app.route('/register_fingerprint', methods=['POST'])
+def register_fingerprint():
+    fingerprint_id = request.form.get('fingerprint_id')
+    
+    if not fingerprint_id:
+        return "Fingerprint ID is required", 400
+    
+    user = User.query.filter_by(fingerprint_id=fingerprint_id).first()
+    if user:
+        # Check if the user already has a record that with no timeout
+        open_record = Attendance.query.filter_by(user_id=user.id, status='registered', timeOut=None).first()
+        if open_record:
+            open_record.checkout()
+            db.session.commit()
+        else:
+            # new attendance record for the user
+            add_attendance_record(fingerprint_id, 'registered')
+        
+        return "Attendance recorded", 200
+    else:
+        return "User not found", 404
+    
 
-#testing receiving a finger print 
-#@app.route('/test_attendance')
-#def test_attendance():
-    # Simulating adding an attendance record
- #   fingerprint_id = 89  # Replace with an actual fingerprint_id that exists
-  #  status = 'registered'
-   ##return "Attendance record added!"
 
 
 if __name__ == '__main__':

@@ -7,20 +7,31 @@
     <title>Fundi Bots Design</title>
 </head>
 <body>
-    <div class="container">
-        <div> class="image-container">
-            <img src="{{ url_for('static', filename='images/bot_image.png') }}" alt="Fundi Bots" class="header-image">
+    <div class="header">
+        <h1>Accelerating Science Learning In Africa</h1>
+        <p class="location-info">Onono Rd Plot 26A</p>
+    </div>
+    <!-- <header class="header">
+        <div class="header-content">
+            <div class="image-container">
+                <img src="{{ url_for('static', filename='images/bot_image.png') }}" alt="Fundi Bots" class="header-image">
+            </div>
         </div>
+    </header> -->
+
+    <div class="spacer"></div>
+
+    <div class="container">
         <div class="input-group">
             <input type="text" id="date-input" placeholder="Date">
-            <input type="text" placeholder="Onono Rd plot 26A">
+            <input type="text" placeholder="Onono Rd plot 26A" class="location-info">
         </div>
         
         <div class="input-group">
             <input type="text" placeholder="Welcome to the Fundi Attendance System">
         </div>
 
-        <a href="{{ url_for('login') }}" class="nav-button">login</a>
+        <a href="{{ url_for('login') }}" class="nav-button">Login</a>
     </div>
 
     <script>

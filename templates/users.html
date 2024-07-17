@@ -7,21 +7,20 @@
     <title>Manage Users</title>
 </head>
 <body>
-    <div class="container">
-        <div class="image-container">
-            <img src="{{ url_for('static', filename='images/bot_image.png') }}" alt="FundiBots" class="header-image">
+    <div class="header">
+        <div class="header-content">
+            <h1>Accelerating Science Learning In Africa</h1>
+            <p class="location-info">Onono Rd Plot 26A</p>
+            <div class="input-group">
+                <a href="{{ url_for('logout') }}" class="nav-button">Logout</a>
+                <a href="{{ url_for('manage_users') }}" class="nav-button">Manage Users</a>
+                <a href="{{ url_for('search') }}" class="nav-button">Search</a>
+            </div>
         </div>
-        <div class="input-group">
-            <input type="text" id="date-input" placeholder="Date">
-            <input type="text" placeholder="Location">
-        </div>
-        <div class="input-group">
-            <a href="{{ url_for('logout') }}" class="nav-button">log out</a>
-            <a href="{{ url_for('manage_users') }}" class="nav-button">manage users</a>
-            <a href="{{ url_for('search') }}" class="nav-button">search</a>
-        </div>
+    </div>
+    <div class ="spacer"></div>
 
-        <!-- <h1>Manage Users</h1> -->
+    <div class="container">
         <h2>Add User</h2>
         <form action="{{ url_for('add_user') }}" method="post" class="input-group">
             <label for="name">Name:</label>
@@ -39,29 +38,34 @@
 
         <h2>Existing Users</h2>
         <table>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Fingerprint ID</th>
-                <th>Category</th>
-                <th>Actions</th>
-            </tr>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.fingerprint_id }}</td>
-                <td>{{ user.category }}</td>
-                <td>
-                    <a href="{{ url_for('update_user', user_id=user.id) }}" class="nav-button">Edit</a>
-                    <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display:inline;">
-                        <button type="submit" class="nav-button">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Fingerprint ID</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.fingerprint_id }}</td>
+                    <td>{{ user.category }}</td>
+                    <td>
+                        <a href="{{ url_for('update_user', user_id=user.id) }}" class="nav-button">Edit</a>
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display: inline;">
+                            <button type="submit" class="nav-button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
-        <a href="{{ url_for('attendance_log') }}" class="nav-button">Back to Attendance Log</a>
+
+        <a href="{{ url_for('attendance_log') }}" class="nav-button">View Attendance Log</a>
     </div>
 
     <script>

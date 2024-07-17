@@ -31,34 +31,67 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>Accelerating Science Learning In Africa</h1>
+        <p class="location-info">Onono Rd Plot 26A</p>
+    </div>
     <div class="container">
         <h1>Attendance Log</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User ID</th>
-                    <th>Timestamp</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in attendance %}
-                <tr>
-                    <td>{{ record.id }}</td>
-                    <td>{{ record.user_id }}</td>
-                    <td>{{ record.timestamp }}</td>
-                    <td>{{ record.status }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- <a href="{{ url_for('users') }}">Back to User Management</a> -->
-
-        <div class="print-button">
-            <button onclick="window.print()">Print</button>
+        <div id="users">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>TimesIn</th>
+                        <th>TimesOut</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.user_id }}</td>
+                        <td>{{ record.timeIn.strftime('%Y-%m-%d %H:%M:%S') if record.timeIn else '' }}</td>
+                        <td>{{ record.timeOut.strftime('%Y-%m-%d %H:%M:%S') if record.timeOut else '' }}</td>
+                        <td>{{ record.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+        <!-- <a href="{{ url_for('users') }}">Back to User Management</a> -->
     </div>
+    <!-- <div class="print-button">
+        <button onclick="window.print()">Print</button>
+    </div> -->
+    <div class="print-button">
+        <button onclick="printTable()">Print</button>
+    </div>
+    <script>
+        function printTable() {
+            const usersDiv = document.getElementById('users');
+            const printContent = usersDiv.innerHTML;
+            const originalContent = document.body.innerHTML;
+
+            // Create a header for printing
+            const printHeader = `
+                <div style="text-align: center;">
+                    <h1 style="color: gray;">Accelerating Science Learning In Africa</h1>
+                    <p>${new Date().toLocaleString()}</p>
+                </div>
+            `;
+
+            // Set the body's HTML to the header and the print content
+            document.body.innerHTML = printHeader + printContent;
+
+            window.print();
+
+            // Restore the original body content
+            document.body.innerHTML = originalContent;
+            window.location.reload();
+        }
+    </script>
 </body>
 </html>
