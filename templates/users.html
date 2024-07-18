@@ -7,20 +7,22 @@
     <title>Manage Users</title>
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
-            <h1>Accelerating Science Learning In Africa</h1>
-            <p class="location-info">Onono Rd Plot 26A</p>
-            <div class="input-group">
-                <a href="{{ url_for('logout') }}" class="nav-button">Logout</a>
-                <a href="{{ url_for('manage_users') }}" class="nav-button">Manage Users</a>
-                <a href="{{ url_for('search') }}" class="nav-button">Search</a>
+    
+    
+    <div class="container" style="margin-top: 0;">
+        <div class="header">
+            <div class="header-content">
+                <h1>Accelerating Science Learning In Africa</h1>
+                <p class="location-info">Onono Rd Plot 26A</p>
+                <div class="input-group">
+                    <a href="{{ url_for('logout') }}" class="header-button">Logout</a>
+                    <a href="{{ url_for('manage_users') }}" class="header-button">Manage Users</a>
+                    <a href="{{ url_for('search') }}" class="header-button">Search</a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class ="spacer"></div>
-
-    <div class="container">
+        <div style="margin-top: 20px;"></div> <!-- Direct margin for space -->
+        <div class ="spacer"></div>
         <h2>Add User</h2>
         <form action="{{ url_for('add_user') }}" method="post" class="input-group">
             <label for="name">Name:</label>
@@ -35,6 +37,8 @@
             </select>
             <button type="submit" class="save-button">Add User</button>
         </form>
+
+        <div class="spacer"></div>
 
         <h2>Existing Users</h2>
         <table>
@@ -55,7 +59,7 @@
                     <td>{{ user.fingerprint_id }}</td>
                     <td>{{ user.category }}</td>
                     <td>
-                        <a href="{{ url_for('update_user', user_id=user.id) }}" class="nav-button">Edit</a>
+                        <a href="{{ url_for('update_user', user_id=user.id) }}" class="save-button">Edit</a>
                         <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display: inline;">
                             <button type="submit" class="nav-button">Delete</button>
                         </form>
@@ -64,8 +68,10 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div style="margin-top: 20px;"></div> <!-- Direct margin for space -->
 
-        <a href="{{ url_for('attendance_log') }}" class="nav-button">View Attendance Log</a>
+
+        <a href="{{ url_for('attendance_log') }}" class="save-button">View Attendance Log</a>
     </div>
 
     <script>

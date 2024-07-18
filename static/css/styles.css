@@ -7,10 +7,21 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-image: url('../images/Designer\ \(12\).jpeg'); 
+    background-image: url('../images/Designer (12).jpeg'); 
     background-size: cover;
-    /* background-color: rgba(0, 0, 0, 1); */
-    opacity: 2;
+    position: relative; /* Ensure relative positioning for overlay */
+    height: 100vh; /* Ensure body takes full viewport height */
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9); /* Adjust the opacity as needed */
+    z-index: -1; /* Ensure the overlay is behind other content */
 }
 
 .header {
@@ -42,22 +53,36 @@ body {
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.95);
     padding: 20px;
-    margin-top: 160px; /* Space between spacer and container */
+    margin-top: 0px; /* Space between spacer and container */
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-
+/* .container.a {
+    margin-top: 160px;
+} */
 .input-group form {
     margin-top: 20px; /* Space between form and existing users */
 }
 
+/*    /////  */
+.image-container {
+    text-align: center; /* Center the image horizontally */
+    margin-bottom: 20px; /* Add some space below the image */
+}
+
+.header-image {
+    max-width: 100%; /* Ensure the image is responsive */
+    height: auto; /* Maintain aspect ratio */
+}
+
+
 .nav-button {
     display: inline-block;
-    background-color: transparent;
-    color: #e82029;
+    background-color: #e82029;
+    color: #ffffff;
     border: 2px solid #e82029;
     border-radius: 20px;
     padding: 10px 20px;
@@ -69,14 +94,14 @@ body {
 }
 
 .nav-button:hover {
-    background-color: #e82029;
-    color: white;
+    background-color: #ffffff;
+    color: #e82029;
 }
 
 .save-button {
-    background-color: #e82029;
+    background-color: #f58320;
     color: white;
-    border: none;
+    border: 2px solid #f58320;
     padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;
@@ -84,7 +109,20 @@ body {
 }
 
 .save-button:hover {
+    background-color: #ffffff;
+    color: #f58320;
+}
+.header-button {
     background-color: #f58320;
+    color: black;
+    border: 2px solid #f58320;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.header-button:hover{
+    color: white;
 }
 
 /* Table Styles */

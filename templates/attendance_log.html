@@ -31,20 +31,50 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Accelerating Science Learning In Africa</h1>
-        <p class="location-info">Onono Rd Plot 26A</p>
-    </div>
+    
+    <div style="margin-top: 0px;"></div> <!-- Direct margin for space -->
+
     <div class="container">
+        <div class="spacer"></div>
+        <div class="header">
+            <h1>Accelerating Science Learning In Africa</h1>
+            <p class="location-info">Onono Rd Plot 26A</p>
+        </div>
+
         <h1>Attendance Log</h1>
+
+        <!-- Search Form -->
+        <form method="POST">
+            <label for="search_name">Search by Name:</label>
+            <input type="text" id="search_name" name="search_name">
+            
+            <label for="search_month">Search by Month:</label>
+            <input type="text" id="search_month" name="search_month">
+            
+            <label for="search_day">Search by Day:</label>
+            <input type="text" id="search_day" name="search_day">
+            
+            <button type="submit">Search</button>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
         <div id="users">
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>User ID</th>
-                        <th>TimesIn</th>
-                        <th>TimesOut</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -78,6 +108,7 @@
             // Create a header for printing
             const printHeader = `
                 <div style="text-align: center;">
+                    <h1 style="color: gray;">FundiBots</h1>
                     <h1 style="color: gray;">Accelerating Science Learning In Africa</h1>
                     <p>${new Date().toLocaleString()}</p>
                 </div>

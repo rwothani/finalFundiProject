@@ -7,18 +7,27 @@
     <title>Update User</title>
 </head>
 <body>
-    <div class="container">
-        <img src="{{ url_for('static', filename='css/styles.css') }}" alt="Fundi Bots" class="header-image">
-        <div class="input-group">
-            <input type="text" id="date-input" placeholder="Date">
-            <input type="text" placeholder="Location">
+        <div class="container" style="margin-top: 0.02;">
+            <div class="header">
+                <h1>Accelerating Science Learning In Africa</h1>
+                <p class="location-info">Onono Rd Plot 26A</p>
+            </div>
+            <div class="spacer"></div>
+        
+        <div class="image-container">
+            <img src= "../images/bot_image.png" alt="Fundi Bots" class="logo-image">
         </div>
+        
         <div class="input-group">
-            <a href="{{ url_for('logout') }}" class="nav-button">log out</a>
-            <a href="{{ url_for('manage_users') }}" class="nav-button">manage users</a>
-            <a href="{{ url_for('search') }}" class="nav-button">search</a>
+            <a href="{{ url_for('logout') }}" class="save-button">log out</a>
+            <a href="{{ url_for('manage_users') }}" class="save-button">manage users</a>
+            <a href="{{ url_for('search') }}" class="save-button">search</a>
         </div>
+
+        <div class="spacer"></div>
+
         <h1>Update User</h1>
+
         <form action="{{ url_for('update_user', user_id=user.id) }}" method="post" class="input-group">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" value="{{ user.name }}" required>
@@ -32,8 +41,13 @@
             </select>
             <button type="submit" class="save-button">Update User</button>
         </form>
-        <a href="{{ url_for('users') }}" class="nav-button">Back to User Management</a>
+        <div style="margin-top: 20px;"></div> <!-- Direct margin for space -->
+
+
+        <a href="{{ url_for('users') }}" class="save-button">Back to User Management</a>
     </div>
+    <!-- <div class="spacer"></div> -->
+    
 
     <script>
         // Function to insert the current date into the date input field

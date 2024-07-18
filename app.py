@@ -1,4 +1,4 @@
-from flask import Flask, flash, render_template, request, redirect, url_for, session
+from flask import Flask, flash, jsonify, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.jinja_env.auto_reload = True  # Setting up jinja2 as the template engine
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///attendance.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
+app.config['SECRET_KEY'] = 'your_secret_key'  
 app.static_folder = 'static'
 app.template_folder = 'templates'
 
@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 
-# Predefined list of categories
+#list of categories
 CATEGORIES = ['Admin', 'Fundi@work', 'Fundi@Home', 'Fundi@School', 'FundiGirl', 'Guest', 'Helper']
 
 class User(db.Model):
@@ -24,6 +24,15 @@ class User(db.Model):
     fingerprint_id = db.Column(db.Integer, unique=True, nullable=False)
     category = db.Column(db.String(20), nullable=False)
     attendance_records = db.relationship('Attendance', backref='user', lazy=True)
+
+    #for the automatic search
+    def to_dict(self):
+        return{
+            'id':self.id,
+            'name':self.name,
+            'fingerprint_id':self.fingerprint_id,
+            'category':self.category,
+        }
 
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -114,16 +123,24 @@ def logout():
     session.pop('admin', None)
     return redirect(url_for('login'))
 
-@app.route('/search', methods=['GET', 'POST'])
+from flask import request, jsonify, render_template, session, redirect, url_for
+
+@app.route('/search', methods=['GET'])
 def search():
     if 'admin' not in session:
         return redirect(url_for('login'))
+    
     query = request.args.get('query')
     if query:
         users = User.query.filter(User.name.ilike(f'%{query}%')).all()
     else:
         users = User.query.all()
-    return render_template('search.html', users=users, categories=CATEGORIES)
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify([user.to_dict() for user in users])
+    else:
+        return render_template('search.html', users=users)
+
 
 @app.route('/manage_users')
 def manage_users():
@@ -132,6 +149,73 @@ def manage_users():
     users = User.query.all()  # Query all users from the database
     return render_template('manage_users.html', users=users)
 
+
+#route to display record
+@app.route('/attendance_log', methods=['GET', 'POST'])
+def attendance_log():
+    if 'admin' not in session:
+        return redirect(url_for('login'))
+    
+    attendance_records = Attendance.query.all()
+
+    if request.method == 'POST':
+        search_name = request.form.get('search_name')
+        search_month = request.form.get('search_month')
+        search_day = request.form.get('search_day')
+
+        if search_name:
+            attendance_records = Attendance.query.join(User).filter(User.name.ilike(f'%{search_name}%')).all()
+
+        if search_month:
+            try:
+                month = int(search_month)
+                if 1 <= month <= 12:
+                    attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.month == month]
+                else:
+                    flash('Invalid month. Please enter a value between 1 and 12.')
+            except ValueError:
+                flash('Invalid month. Please enter a numeric value.')
+
+        if search_day:
+            try:
+                day = int(search_day)
+                if 1 <= day <= 31:
+                    attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.day == day]
+                else:
+                    flash('Invalid day. Please enter a value between 1 and 31.')
+            except ValueError:
+                flash('Invalid day. Please enter a numeric value.')
+
+        if not attendance_records:
+            flash('No results found')
+
+    return render_template('attendance_log.html', attendance=attendance_records)
+
+#point to handle the reception of print
+@app.route('/register_fingerprint', methods=['POST'])
+def register_fingerprint():
+    fingerprint_id = request.form.get('fingerprint_id')
+    
+    if not fingerprint_id:
+        return "No Fingerprint_ID"
+    
+    user = find_user_by_fingerprint(fingerprint_id)
+    if user:
+        open_record = Attendance.query.filter_by(user_id=user.id, status='registered', timeOut=None).first()
+        if open_record:
+            open_record.checkout()
+            db.session.commit()
+        else:
+            add_attendance_record(fingerprint_id, 'registered')
+        
+        return "Attendance recorded"
+    else:
+        return "User not found", 404
+
+#helper function to search the user table 
+def find_user_by_fingerprint(fingerprint_id):
+    return User.query.filter_by(fingerprint_id=fingerprint_id).first()
+
 #function to add the record 
 def add_attendance_record(fingerprint_id, status):
     user = User.query.filter_by(fingerprint_id=fingerprint_id).first()
@@ -139,40 +223,6 @@ def add_attendance_record(fingerprint_id, status):
         new_record = Attendance(user_id=user.id, status=status)
         db.session.add(new_record)
         db.session.commit()
-
-#route to display record
-@app.route('/attendance_log')
-def attendance_log():
-    if 'admin' not in session:
-        return redirect(url_for('login'))
-    attendance_records = Attendance.query.all()
-    # flash(f"Found {len(attendance_records)} attendance records")
-    return render_template('attendance_log.html', attendance=attendance_records)
-
-#point to handle the reception of print (still in progress)
-@app.route('/register_fingerprint', methods=['POST'])
-def register_fingerprint():
-    fingerprint_id = request.form.get('fingerprint_id')
-    
-    if not fingerprint_id:
-        return "Fingerprint ID is required", 400
-    
-    user = User.query.filter_by(fingerprint_id=fingerprint_id).first()
-    if user:
-        # Check if the user already has a record that with no timeout
-        open_record = Attendance.query.filter_by(user_id=user.id, status='registered', timeOut=None).first()
-        if open_record:
-            open_record.checkout()
-            db.session.commit()
-        else:
-            # new attendance record for the user
-            add_attendance_record(fingerprint_id, 'registered')
-        
-        return "Attendance recorded", 200
-    else:
-        return "User not found", 404
-    
-
 
 
 if __name__ == '__main__':
