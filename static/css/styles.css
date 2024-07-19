@@ -70,7 +70,18 @@ body::before {
 /*    /////  */
 .image-container {
     text-align: center; /* Center the image horizontally */
-    margin-bottom: 20px; /* Add some space below the image */
+    margin: 20px auto; /* space below the image */
+    /* margin-left: 150px;
+    margin-right: 150px; */
+    width:100%;
+    max-width: 400px;
+    height: 100px;
+    background-image: url('../images/botimage.png');
+    background-repeat: no repeat;
+    background-position: center;
+    background-size: cover;
+    border-radius: 40px;
+
 }
 
 .header-image {
@@ -101,6 +112,7 @@ body::before {
 .save-button {
     background-color: #f58320;
     color: white;
+    font-weight: bold;
     border: 2px solid #f58320;
     padding: 10px 20px;
     border-radius: 20px;
@@ -115,6 +127,7 @@ body::before {
 .header-button {
     background-color: #f58320;
     color: black;
+    font-weight: bold;
     border: 2px solid #f58320;
     padding: 10px 20px;
     border-radius: 20px;
