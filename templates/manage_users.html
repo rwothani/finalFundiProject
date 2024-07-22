@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         table {
@@ -31,17 +32,17 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Fundi Bots</h1>
-        <h1>Accelerating Science Learning In Africa</h1>
-        <p class="location-info">Onono Rd Plot 26A</p>
+    <div class="header logo flex flex-col flex-wrap text-start justify-between px-4">
+        <h1 class="text-2xl  text-start">Fundi Bots</h1>
+        <p class=" text-start">Accelerating Science Learning In Africa</p>
+        <p class="location-info text-start">Onono Rd Plot 26A</p>
     </div>
-    <div class="spacer"></div>
-    <div class="spacer"></div>
-    <div class="container" style="margin-top: 0;">
+    <!-- <div class="spacer"></div>
+    <div class="spacer"></div> -->
+    <div class="container mx-auto mt-5">
         <h1>Existing Users</h1>
-        <div id="users">
-            <table>
+        <div id="users" class=" overflow-x-auto">
+            <table class=" rounded-lg">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -70,8 +71,8 @@
             </table>
         </div>
 
-        <div class="print-button">
-            <button onclick="printTable()">Print</button>
+        <div class="mx-auto flex justify-center">
+            <button class="border-gray-400 block shadow-md rounded-md w-auto mt-10 text-center save-button" onclick="printTable()"  >Print</button>
         </div>
 
         <div class="no-print">

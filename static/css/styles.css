@@ -7,10 +7,15 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-image: url('../images/Designer (12).jpeg'); 
+    background-image: url('../images/Designer (12).jpeg');
     background-size: cover;
-    position: relative; /* Ensure relative positioning for overlay */
-    height: 100vh; /* Ensure body takes full viewport height */
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    position: relative;
+    /* Ensure relative positioning for overlay */
+    height: 100vh;
+    /* Ensure body takes full viewport height */
 }
 
 body::before {
@@ -20,60 +25,70 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.9); /* Adjust the opacity as needed */
-    z-index: -1; /* Ensure the overlay is behind other content */
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Adjust the opacity as needed */
+    z-index: -1;
+    /* Ensure the overlay is behind other content */
 }
 
 .header {
     background-color: #f58320;
     color: white;
-    padding: 10px 20px;
+    padding: 10px 10px;
     text-align: center;
-    position: fixed;
+    position: sticky;
     width: 100%;
     top: 0;
     z-index: 1000;
 }
 
 .header-content {
-    max-width: 800px;
-    margin: 0 auto; /* Center align content */
+    /* max-width: 800px; */
+    margin: auto;
+    /* Center align content */
 }
 
 .location-info {
-    margin-top: 5px; 
+    margin-top: 5px;
 }
 
 .input-group {
-    margin-top: 20px; /* Space between header content and buttons */
+    margin-top: 20px;
+    /* Space between header content and buttons */
 }
 
 .spacer {
-    height: 90px; /* Adjust */
+    height: 90px;
+    /* Adjust */
 }
 
 .container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 20px;
-    margin-top: 0px; /* Space between spacer and container */
+    /* margin-top: 0px; */
+    /* Space between spacer and container */
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
+
 /* .container.a {
     margin-top: 160px;
 } */
 .input-group form {
-    margin-top: 20px; /* Space between form and existing users */
+    /* margin-top: 20px; */
+    /* Space between form and existing users */
 }
 
 /*    /////  */
 .image-container {
-    text-align: center; /* Center the image horizontally */
-    margin: 20px auto; /* space below the image */
+    text-align: center;
+    /* Center the image horizontally */
+    margin: 20px auto;
+    /* space below the image */
     /* margin-left: 150px;
     margin-right: 150px; */
-    width:100%;
+    width: 100%;
     max-width: 400px;
     height: 100px;
     background-image: url('../images/botimage.png');
@@ -85,23 +100,26 @@ body::before {
 }
 
 .header-image {
-    max-width: 100%; /* Ensure the image is responsive */
-    height: auto; /* Maintain aspect ratio */
+    max-width: 100%;
+    /* Ensure the image is responsive */
+    height: auto;
+    /* Maintain aspect ratio */
 }
 
 
 .nav-button {
-    display: inline-block;
+    /* display: inline-block; */
     background-color: #e82029;
     color: #ffffff;
+    font-weight: bold;
     border: 2px solid #e82029;
     border-radius: 20px;
     padding: 10px 20px;
-    margin: 5px;
+    /* margin: 5px; */
     text-decoration: none;
     text-align: center;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 
 .nav-button:hover {
@@ -124,6 +142,7 @@ body::before {
     background-color: #ffffff;
     color: #f58320;
 }
+
 .header-button {
     background-color: #f58320;
     color: black;
@@ -134,7 +153,8 @@ body::before {
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-.header-button:hover{
+
+.header-button:hover {
     color: white;
 }
 
@@ -142,26 +162,39 @@ body::before {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px; /* Space above the table */
+    margin-top: 20px;
+    /* Space above the table */
 }
 
-th, td {
-    border: 1px solid #ddd; /* Light gray border */
+th,
+td {
+    border: 1px solid #ddd;
+    /* Light gray border */
     padding: 8px;
     text-align: left;
 }
 
 th {
-    background-color: #f2f2f2; /* Light gray background for headers */
+    background-color: #f2f2f2;
+    /* Light gray background for headers */
 }
 
 tr:nth-child(even) {
-    background-color: #f9f9f9; /* Alternate row background color */
+    background-color: #f9f9f9;
+    /* Alternate row background color */
 }
 
 
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
     .input-group form {
-        margin-top: 10px; /* Adjust spacing for smaller screens */
-    }
+        margin-top: 10px;
+        /* Adjust spacing for smaller screens */
+    
+ */
+
+input {
+    border: gray;
+    border-bottom: black;
+    border-width: 1px;
+    border-bottom-width: 3px;
 }
