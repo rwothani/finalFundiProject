@@ -75,10 +75,7 @@ body::before {
 /* .container.a {
     margin-top: 160px;
 } */
-.input-group form {
-    /* margin-top: 20px; */
-    /* Space between form and existing users */
-}
+
 
 /*    /////  */
 .image-container {
@@ -156,6 +153,16 @@ body::before {
 
 .header-button:hover {
     color: white;
+}
+
+.icon {
+    margin-right: 0px; /* Space between icon and text */
+    
+}
+
+.material-icons {
+    font-size: 18px; /*icon size*/
+    line-height: 1;
 }
 
 /* Table Styles */

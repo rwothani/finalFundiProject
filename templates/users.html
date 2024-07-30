@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Manage Users</title>
     <script type="text/javascript" src="https://livejs.com/live.js"></script>
 
@@ -23,7 +24,12 @@
             <div class="input-group justify-around p-4 max-md:hidden">
                 <a href="{{ url_for('logout') }}" class="header-button">Logout</a>
                 <a href="{{ url_for('manage_users') }}" class="header-button">Manage Users</a>
-                <a href="{{ url_for('search') }}" class="header-button">Search</a>
+                <a href="{{ url_for('search') }}" class="header-button">
+                    <span class="icon">
+                        <i class="material-icons">search</i>
+                    </span>
+                    Search</a>
+                <!-- <i class="material-icons">search</i> -->
             </div>
             <!-- <div class="md:hidden">
                 <div class="dropdown dropdown-end">

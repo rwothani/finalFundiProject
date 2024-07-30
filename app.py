@@ -1,4 +1,6 @@
+import atexit
 import os
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, flash, jsonify, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -11,11 +13,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY','your_secret_key')  
 app.static_folder = 'static'
 app.template_folder = 'templates'
-
 db = SQLAlchemy(app)
-
 migrate = Migrate(app, db)
-
 #list of categories
 CATEGORIES = ['Admin', 'Fundi@work', 'Fundi@Home', 'Fundi@School', 'FundiGirl', 'Guest', 'Helper']
 
@@ -58,7 +57,7 @@ class Attendance(db.Model):
 
 @app.route('/')
 def index():
-    return render_template('index.html')  # , attendance=attendance_records)
+    return render_template('index.html')  #attendance=attendance_records
 
 @app.route('/users')
 def users():
@@ -78,7 +77,7 @@ def add_user():
         new_user = User(name=name, fingerprint_id=fingerprint_id, category=category)
         db.session.add(new_user)
         db.session.commit()
-        flash('User added successfully')
+        #flash('User added successfully')
         return redirect(url_for('users'))
     return render_template('add_user.html', categories=CATEGORIES)
 
@@ -92,7 +91,7 @@ def update_user(user_id):
         user.fingerprint_id = request.form['fingerprint_id']
         user.category = request.form['category']
         db.session.commit()
-        flash('User updated successfully')
+        #flash('User updated successfully')
         return redirect(url_for('users'))
     return render_template('update_user.html', user=user, categories=CATEGORIES)
 
@@ -111,8 +110,8 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # Implement proper authentication
-        if username == 'admin' and password == 'password':  # Replace with a real authentication method
+        #authentication
+        if username == 'admin' and password == 'password':  # to be replaced with a real authentication method
             session['admin'] = True
             return redirect(url_for('users'))
         else:
@@ -224,6 +223,21 @@ def add_attendance_record(fingerprint_id, status):
         new_record = Attendance(user_id=user.id, status=status)
         db.session.add(new_record)
         db.session.commit()
+
+
+#handling unclosed records
+def close_open_records():
+    open_records=Attendance.query.filter(Attendance.timeOut==None).all()
+    for record in open_records:
+        if record.timeIn.date() < datetime.now().date():
+            record.timeOut=datetime.combine(record.timeIn.date(), datetime.max.time())
+            db.session.commit()
+
+scheduler = BackgroundScheduler()#for running the close records functions at midnight evryday
+scheduler.add_job(func=close_open_records, trigger='cron',hour=0, minute=0)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())# for ensuring the application shuts down neatly 
+
 
 
 if __name__ == '__main__':
