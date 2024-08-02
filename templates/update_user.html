@@ -33,7 +33,7 @@
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" value="{{ user.name }}" required>
             <label for="fingerprint_id">Fingerprint ID:</label>
-            <input type="number" id="fingerprint_id" name="fingerprint_id" value="{{ user.fingerprint_id }}" required>
+            <input type="number" id="fingerprint_id" name="fingerprint_id" value="{{ user.fingerprint_id }}" min="1" max="127" required>
             <label for="category">Category:</label>
             <select id="category" name="category" required>
                 {% for category in categories %}

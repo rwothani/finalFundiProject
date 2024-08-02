@@ -4,7 +4,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, flash, jsonify, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import pytz
 from flask_migrate import Migrate
+import requests
 
 app = Flask(__name__)
 app.jinja_env.auto_reload = True  # Setting up jinja2 as the template engine
@@ -17,6 +19,10 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 #list of categories
 CATEGORIES = ['Admin', 'Fundi@work', 'Fundi@Home', 'Fundi@School', 'FundiGirl', 'Guest', 'Helper']
+#East African Timezone
+EAT = pytz.timezone('Africa/Nairobi')
+ESP_URL='http://<ESP_IP>:80/update'  # the esp ip is not yet set just holding the place
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,6 +60,16 @@ class Attendance(db.Model):
         if self.status == 'registered' and self.timeIn is not None:
             self.timeOut = datetime.now()
 
+def now_in_eat():
+    return datetime.now(EAT)
+
+def notify_esp(action, user_id):
+    try:
+        response = requests.post(ESP_URL, data={'action': action, 'user_id': user_id})
+        response.raise_for_status()  
+    except requests.RequestException as e:
+        print(f"Error notifying ESP: {e}")
+
 
 @app.route('/')
 def index():
@@ -77,6 +93,8 @@ def add_user():
         new_user = User(name=name, fingerprint_id=fingerprint_id, category=category)
         db.session.add(new_user)
         db.session.commit()
+        #sending the finger print id to the esp
+        notify_esp('add',fingerprint_id)
         #flash('User added successfully')
         return redirect(url_for('users'))
     return render_template('add_user.html', categories=CATEGORIES)
@@ -102,6 +120,7 @@ def delete_user(user_id):
     user = User.query.get(user_id)
     db.session.delete(user)
     db.session.commit()
+    notify_esp('delete', user.fingerprint_id)
     flash('User deleted successfully')
     return redirect(url_for('users'))
 
@@ -156,21 +175,27 @@ def attendance_log():
     if 'admin' not in session:
         return redirect(url_for('login'))
     
-    attendance_records = Attendance.query.all()
+    # attendance_records = Attendance.query.all()
+    attendance_records = Attendance.query.join(User).all()
 
     if request.method == 'POST':
         search_name = request.form.get('search_name')
         search_month = request.form.get('search_month')
         search_day = request.form.get('search_day')
 
+        #joining the tables
+        query = Attendance.query.join(User)
+
         if search_name:
-            attendance_records = Attendance.query.join(User).filter(User.name.ilike(f'%{search_name}%')).all()
+            #attendance_records = Attendance.query.join(User).filter(User.name.ilike(f'%{search_name}%')).all()
+            query = query.filter(User.name.ilike(f'%{search_name}%'))
 
         if search_month:
             try:
                 month = int(search_month)
                 if 1 <= month <= 12:
-                    attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.month == month]
+                    query= query.filter(Attendance.timeIn.has(month=month))
+                    # attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.month == month]
                 else:
                     flash('Invalid month. Please enter a value between 1 and 12.')
             except ValueError:
@@ -180,7 +205,8 @@ def attendance_log():
             try:
                 day = int(search_day)
                 if 1 <= day <= 31:
-                    attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.day == day]
+                    # attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.day == day]
+                    query = query.filter(Attendance.timeIn.has(day=day))
                 else:
                     flash('Invalid day. Please enter a value between 1 and 31.')
             except ValueError:
@@ -229,11 +255,11 @@ def add_attendance_record(fingerprint_id, status):
 def close_open_records():
     open_records=Attendance.query.filter(Attendance.timeOut==None).all()
     for record in open_records:
-        if record.timeIn.date() < datetime.now().date():
-            record.timeOut=datetime.combine(record.timeIn.date(), datetime.max.time())
+        if record.timeIn.date() < now_in_eat().date():
+            record.timeOut = datetime.combine(record.timeIn.date(), datetime.max.time(), tzinfo=EAT)
             db.session.commit()
 
-scheduler = BackgroundScheduler()#for running the close records functions at midnight evryday
+scheduler = BackgroundScheduler(timezone='Africa/Nairobi')#for running the close records functions at midnight evryday
 scheduler.add_job(func=close_open_records, trigger='cron',hour=0, minute=0)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())# for ensuring the application shuts down neatly 
