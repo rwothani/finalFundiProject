@@ -7,10 +7,12 @@ from datetime import datetime
 import pytz
 from flask_migrate import Migrate
 import requests
+from flask import request, jsonify, render_template, session, redirect, url_for
+
 
 app = Flask(__name__)
 app.jinja_env.auto_reload = True  # Setting up jinja2 as the template engine
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL','sqlite:///attendance.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL','postgresql://fundidatabase_user:pU39YDMuKAQonkBrWN7BRKei8bnin5ay@dpg-cqn373tds78s73977me0-a.frankfurt-postgres.render.com/fundidatabase')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY','your_secret_key')  
 app.static_folder = 'static'
@@ -142,7 +144,6 @@ def logout():
     session.pop('admin', None)
     return redirect(url_for('login'))
 
-from flask import request, jsonify, render_template, session, redirect, url_for
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -260,7 +261,8 @@ def close_open_records():
             db.session.commit()
 
 scheduler = BackgroundScheduler(timezone='Africa/Nairobi')#for running the close records functions at midnight evryday
-scheduler.add_job(func=close_open_records, trigger='cron',hour=0, minute=0)
+# scheduler.add_job(func=close_open_records, trigger='cron',hour=0, minute=0)
+scheduler.add_job(func=close_open_records, trigger="interval", seconds=86400) 
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())# for ensuring the application shuts down neatly 
 
