@@ -22,7 +22,7 @@ migrate = Migrate(app, db)
 #list of categories
 CATEGORIES = ['Admin', 'Fundi@work', 'Fundi@Home', 'Fundi@School', 'FundiGirl', 'Guest', 'Helper']
 #East African Timezone
-EAT = pytz.timezone('Africa/Nairobi')
+EAT = pytz.timezone('Africa/Kampala')
 ESP_URL='http://<ESP_IP>:80/update'  # the esp ip is not yet set just holding the place
 
 
@@ -56,11 +56,11 @@ class Attendance(db.Model):
         self.timeOut = None
 
         if self.status == 'registered':
-            self.timeIn = datetime.now()
+            self.timeIn = datetime.now(EAT)
 
     def checkout(self):
         if self.status == 'registered' and self.timeIn is not None:
-            self.timeOut = datetime.now()
+            self.timeOut = datetime.now(EAT)
 
 def now_in_eat():
     return datetime.now(EAT)
@@ -260,7 +260,7 @@ def close_open_records():
             record.timeOut = datetime.combine(record.timeIn.date(), datetime.max.time(), tzinfo=EAT)
             db.session.commit()
 
-scheduler = BackgroundScheduler(timezone='Africa/Nairobi')#for running the close records functions at midnight evryday
+scheduler = BackgroundScheduler(timezone='Africa/Kampala')#for running the close records functions at midnight evryday
 # scheduler.add_job(func=close_open_records, trigger='cron',hour=0, minute=0)
 scheduler.add_job(func=close_open_records, trigger="interval", seconds=86400) 
 scheduler.start()
