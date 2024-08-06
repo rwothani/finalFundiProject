@@ -252,12 +252,13 @@ def find_user_by_fingerprint(fingerprint_id):
     return User.query.filter_by(fingerprint_id=fingerprint_id).first()
 
 #function to add the record 
-def add_attendance_record(fingerprint_id, status):
+def add_attendance_record(fingerprint_id):
     user = User.query.filter_by(fingerprint_id=fingerprint_id).first()
     if user:
-        new_record = Attendance(user_id=user.id, status=status)
+        new_record = Attendance(user_id=user.id)
         db.session.add(new_record)
         db.session.commit()
+        return "changed status"
 
 
 #handling unclosed records
