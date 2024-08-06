@@ -8,6 +8,8 @@ import pytz
 from flask_migrate import Migrate
 import requests
 from flask import request, jsonify, render_template, session, redirect, url_for
+from sqlalchemy import extract
+from sqlalchemy.sql import func
 
 
 app = Flask(__name__)
@@ -177,7 +179,8 @@ def attendance_log():
         return redirect(url_for('login'))
     
     # attendance_records = Attendance.query.all()
-    attendance_records = Attendance.query.join(User).all()
+    # attendance_records = Attendance.query.join(User).all()
+    query=Attendance.query.join(User)
 
     if request.method == 'POST':
         search_name = request.form.get('search_name')
@@ -185,7 +188,7 @@ def attendance_log():
         search_day = request.form.get('search_day')
 
         #joining the tables
-        query = Attendance.query.join(User)
+        #query = Attendance.query.join(User)
 
         if search_name:
             #attendance_records = Attendance.query.join(User).filter(User.name.ilike(f'%{search_name}%')).all()
@@ -195,7 +198,8 @@ def attendance_log():
             try:
                 month = int(search_month)
                 if 1 <= month <= 12:
-                    query= query.filter(Attendance.timeIn.has(month=month))
+                    #query= query.filter(Attendance.timeIn.has(month=month))
+                    query=query.filter(func.extract('month',Attendance.timeIn) == search_month)
                     # attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.month == month]
                 else:
                     flash('Invalid month. Please enter a value between 1 and 12.')
@@ -207,14 +211,18 @@ def attendance_log():
                 day = int(search_day)
                 if 1 <= day <= 31:
                     # attendance_records = [record for record in attendance_records if record.timeIn and record.timeIn.day == day]
-                    query = query.filter(Attendance.timeIn.has(day=day))
+                    #query = query.filter(Attendance.timeIn.has(day=day))
+                    query=query.filter(func.extract('day',Attendance.timeIn)== search_day)
                 else:
                     flash('Invalid day. Please enter a value between 1 and 31.')
             except ValueError:
                 flash('Invalid day. Please enter a numeric value.')
 
-        if not attendance_records:
-            flash('No results found')
+      
+    attendance_records=query.all()
+
+    if not attendance_records:
+        flash('No results found')
 
     return render_template('attendance_log.html', attendance=attendance_records)
 
