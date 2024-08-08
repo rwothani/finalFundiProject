@@ -58,7 +58,7 @@ class User(db.Model):
 
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
     timeIn = db.Column(db.DateTime)
     timeOut = db.Column(db.DateTime)
     status = db.Column(db.String(10), nullable=False)
@@ -152,11 +152,27 @@ def update_user(user_id):
 def delete_user(user_id):
     if 'admin' not in session:
         return redirect(url_for('login'))
+    
     user = User.query.get(user_id)
-    db.session.delete(user)
-    db.session.commit()
-    notify_esp('delete', user.fingerprint_id)
-    flash('User deleted successfully')
+    if not user:
+        flash('User not found.')
+        return redirect(url_for('users'))
+
+    try:
+        # Set user_id to None for all attendance records associated with this user
+        Attendance.query.filter_by(user_id=user_id).update({'user_id': None})
+
+        db.session.delete(user)
+        db.session.commit()
+
+        # Notify the ESP32 about the deletion
+        notify_esp('delete', user.fingerprint_id)
+
+        flash('User deleted successfully.')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting user: {str(e)}')
+
     return redirect(url_for('users'))
 
 @app.route('/login', methods=['GET', 'POST'])
