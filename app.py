@@ -10,6 +10,7 @@ import requests
 from flask import request, jsonify, render_template, session, redirect, url_for
 from sqlalchemy import extract
 from sqlalchemy.sql import func
+import logging
 
 
 app = Flask(__name__)
@@ -21,12 +22,23 @@ app.static_folder = 'static'
 app.template_folder = 'templates'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+#set up of logging
+logging.basicConfig(level=logging.INFO)
+logger=logging.getLogger(__name__)
+
 #list of categories
 CATEGORIES = ['Admin', 'Fundi@work', 'Fundi@Home', 'Fundi@School', 'FundiGirl', 'Guest', 'Helper']
 #East African Timezone
 EAT = pytz.timezone('Africa/Kampala')
-ESP_URL='http://<ESP_IP>:80/update'  # the esp ip is not yet set just holding the place
+ESP_URL=None  # the esp ip is not yet set just holding the place
+#ESP_URL_add='http://192.168.0.10:80/'
+#ESP_URL=' https://4e4c-41-75-182-54.ngrok-free.app -> http:'
 
+
+
+
+def now_in_eat():
+    return datetime.now(EAT)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -64,15 +76,36 @@ class Attendance(db.Model):
         if self.status == 'registered' and self.timeIn is not None:
             self.timeOut = datetime.now(EAT)
 
-def now_in_eat():
-    return datetime.now(EAT)
 
+@app.route('/set_esp_url', methods=['POST'])
+def set_esp_url():
+    global ESP_URL
+    esp_ip = request.form.get('esp_url')  # Retrieve the IP address
+
+    if esp_ip:
+        # Construct the full URL with port 80
+        ESP_URL = f'http://{esp_ip}:80'
+        flash('ESP URL set successfully.')
+    else:
+        flash('Failed to set ESP URL.')
+    
+    return "success"
+
+
+@app.route('/notify_esp', methods=['POST'])
 def notify_esp(action, user_id):
+    if not ESP_URL:
+        logger.error("ESP URL not set")
+        flash("ESP URL not set")
+        return False
     try:
         response = requests.post(ESP_URL, data={'action': action, 'user_id': user_id})
         response.raise_for_status()  
+        logger.info(f"successfully notified esp with action:{action}, user_id:{user_id}")
+        return True
     except requests.RequestException as e:
-        print(f"Error notifying ESP: {e}")
+        logger.info(f"Error notifying ESP: {e}")
+        return False
 
 
 @app.route('/')
@@ -99,7 +132,6 @@ def add_user():
         db.session.commit()
         #sending the finger print id to the esp
         notify_esp('add',fingerprint_id)
-        #flash('User added successfully')
         return redirect(url_for('users'))
     return render_template('add_user.html', categories=CATEGORIES)
 
@@ -113,7 +145,6 @@ def update_user(user_id):
         user.fingerprint_id = request.form['fingerprint_id']
         user.category = request.form['category']
         db.session.commit()
-        #flash('User updated successfully')
         return redirect(url_for('users'))
     return render_template('update_user.html', user=user, categories=CATEGORIES)
 
