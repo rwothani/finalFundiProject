@@ -81,6 +81,7 @@ class Attendance(db.Model):
 def set_esp_url():
     global ESP_URL
     esp_ip = request.form.get('esp_url')  # Retrieve the IP address
+    logger.info(f"Received ESP IP: {'esp_ip'}")
 
     if esp_ip:
         # Construct the full URL with port 80
@@ -98,6 +99,7 @@ def notify_esp(action, user_id):
         logger.error("ESP URL not set")
         flash("ESP URL not set")
         return False
+    logger.info(f"ESP_URL is: {ESP_URL}")
     try:
         response = requests.post(ESP_URL, data={'action': action, 'user_id': user_id})
         response.raise_for_status()  
@@ -152,7 +154,7 @@ def update_user(user_id):
 def delete_user(user_id):
     if 'admin' not in session:
         return redirect(url_for('login'))
-    
+
     user = User.query.get(user_id)
     if not user:
         flash('User not found.')
@@ -160,7 +162,7 @@ def delete_user(user_id):
 
     try:
         # Set user_id to None for all attendance records associated with this user
-        Attendance.query.filter_by(user_id=user_id).update({'user_id': None})
+        Attendance.query.filter_by(user_id=user_id).update({'user_id': None}, synchronize_session='fetch')
 
         db.session.delete(user)
         db.session.commit()
@@ -174,7 +176,6 @@ def delete_user(user_id):
         flash(f'Error deleting user: {str(e)}')
 
     return redirect(url_for('users'))
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
