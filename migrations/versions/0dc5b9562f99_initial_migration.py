@@ -98,6 +98,10 @@ def downgrade():
         batch_op.add_column(sa.Column('timestamp', sa.DATETIME(), nullable=True))
         batch_op.drop_column('timeOut')
         batch_op.drop_column('timeIn')
+        #making user id nullable again
+        batch_op.alter_column('user_id',
+                              existing_type=sa.Integer(),
+                              nullable=False)
 
     # If 'timestamp' was dropped in 'upgrade()', add it back in 'downgrade()'
     # with op.batch_alter_table('attendance', schema=None) as batch_op:
