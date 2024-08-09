@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="refresh" content="2"> -->
     <title>Attendance Log</title>
+    <script>
+        setTimeout(function() {
+            window.location.reload();
+        }, 2000); // Refresh every 2000 milliseconds (2 seconds)
+    </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
     <style>

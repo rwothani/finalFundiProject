@@ -4,7 +4,7 @@ import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, flash, jsonify, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 from flask_migrate import Migrate
 import requests
@@ -71,11 +71,11 @@ class Attendance(db.Model):
         self.timeOut = None
 
         if self.status == 'registered':
-            self.timeIn = datetime.now(EAT)
+            self.timeIn = datetime.now(EAT) + timedelta(hours=3)
 
     def checkout(self):
         if self.status == 'registered' and self.timeIn is not None:
-            self.timeOut = datetime.now(EAT)
+            self.timeOut = datetime.now(EAT) + timedelta(hours=3)
 
 
 # @app.route('/set_esp_url', methods=['POST'])
@@ -94,31 +94,31 @@ class Attendance(db.Model):
 #     return "success"
 
 
-@app.route('/notify_esp', methods=['POST'])
-def notify_esp():
-    if not ESP_URL:
-        logger.error("ESP URL not set")
-        flash("ESP URL not set")
-        return "ESP URL not set", 400
+# @app.route('/notify_esp', methods=['POST'])
+# def notify_esp():
+#     if not ESP_URL:
+#         logger.error("ESP URL not set")
+#         flash("ESP URL not set")
+#         return "ESP URL not set", 400
 
-    # Retrieve action and user_id from the request
-    action = request.form.get('action')
-    user_id = request.form.get('user_id')
+#     # Retrieve action and user_id from the request
+#     action = request.form.get('action')
+#     user_id = request.form.get('user_id')
 
-    if not action or not user_id:
-        flash("Missing action or user_id")
-        return "Missing action or user_id", 400
+#     if not action or not user_id:
+#         flash("Missing action or user_id")
+#         return "Missing action or user_id", 400
 
-    logger.info(f"ESP_URL is: {ESP_URL}")
-    logger.info(f"Sending request to ESP with action: {action}, user_id: {user_id}")
-    try:
-        response = requests.post(ESP_URL + '/notify_esp', data={'action': action, 'user_id': user_id})
-        response.raise_for_status()  # Raises an HTTPError if the response code was 4xx, 5xx
-        logger.info(f"Successfully notified ESP with action: {action}, user_id: {user_id}")
-        return "Notification sent successfully", 200
-    except requests.RequestException as e:
-        logger.error(f"Error notifying ESP: {e}")
-        return "Error notifying ESP", 500
+#     logger.info(f"ESP_URL is: {ESP_URL}")
+#     logger.info(f"Sending request to ESP with action: {action}, user_id: {user_id}")
+#     try:
+#         response = requests.post(ESP_URL + '/notify_esp', data={'action': action, 'user_id': user_id})
+#         response.raise_for_status()  # Raises an HTTPError if the response code was 4xx, 5xx
+#         logger.info(f"Successfully notified ESP with action: {action}, user_id: {user_id}")
+#         return "Notification sent successfully", 200
+#     except requests.RequestException as e:
+#         logger.error(f"Error notifying ESP: {e}")
+#         return "Error notifying ESP", 500
 
 @app.route('/')
 def index():
@@ -144,7 +144,7 @@ def add_user():
             db.session.add(new_user)
             db.session.commit()
         #sending the finger print id to the esp
-            notify_esp('add',fingerprint_id)
+            #notify_esp('add',fingerprint_id)
             return redirect(url_for('users'))
         except Exception as e:
             app.logger.error(f"Error: {e}")
@@ -164,6 +164,7 @@ def update_user(user_id):
         return redirect(url_for('users'))
     return render_template('update_user.html', user=user, categories=CATEGORIES)
 
+
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
     if 'admin' not in session:
@@ -182,7 +183,7 @@ def delete_user(user_id):
         db.session.commit()
 
         # Notify the ESP32 about the deletion
-        notify_esp('delete', user.fingerprint_id)
+        #notify_esp('delete', user.fingerprint_id)
 
         flash('User deleted successfully.')
     except Exception as e:
@@ -190,6 +191,7 @@ def delete_user(user_id):
         flash(f'Error deleting user: {str(e)}')
 
     return redirect(url_for('users'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
