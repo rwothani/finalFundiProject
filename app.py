@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 import pytz
 from flask_migrate import Migrate
 import requests
-from flask import request, jsonify, render_template, session, redirect, url_for
 from sqlalchemy import extract
 from sqlalchemy.sql import func
 import logging
@@ -35,7 +34,7 @@ ESP_URL='http://192.168.43.196:80' # the esp ip is not yet set just holding the 
 #ESP_URL_add='http://192.168.0.10:80/'
 #ESP_URL=' https://4e4c-41-75-182-54.ngrok-free.app -> http:'
 
-
+latest_action= {'action':None,'id': None}
 
 
 def now_in_eat():
@@ -133,8 +132,11 @@ def users():
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
+    global latest_action
+
     if 'admin' not in session:
         return redirect(url_for('login'))
+    
     if request.method == 'POST':
         try:
             name = request.form['name']
@@ -143,8 +145,10 @@ def add_user():
             new_user = User(name=name, fingerprint_id=fingerprint_id, category=category)
             db.session.add(new_user)
             db.session.commit()
-        #sending the finger print id to the esp
-            #notify_esp('add',fingerprint_id)
+            #update the shared state
+            latest_action['action']='add'
+            latest_action['id']=fingerprint_id
+        
             return redirect(url_for('users'))
         except Exception as e:
             app.logger.error(f"Error: {e}")
@@ -167,6 +171,8 @@ def update_user(user_id):
 
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
+    global latest_action
+
     if 'admin' not in session:
         return redirect(url_for('login'))
 
@@ -182,9 +188,11 @@ def delete_user(user_id):
         db.session.delete(user)
         db.session.commit()
 
-        # Notify the ESP32 about the deletion
-        #notify_esp('delete', user.fingerprint_id)
+        #update the shared variable
+        latest_action['action']='delete'
+        latest_action['id']= user.fingerprint_id
 
+       
         flash('User deleted successfully.')
     except Exception as e:
         db.session.rollback()
@@ -332,13 +340,18 @@ def close_open_records():
             record.timeOut = datetime.combine(record.timeIn.date(), datetime.max.time(), tzinfo=EAT)
             db.session.commit()
 
+
+
 scheduler = BackgroundScheduler(timezone='Africa/Kampala')#for running the close records functions at midnight evryday
 # scheduler.add_job(func=close_open_records, trigger='cron',hour=0, minute=0)
 scheduler.add_job(func=close_open_records, trigger="interval", seconds=86400) 
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())# for ensuring the application shuts down neatly 
 
-
+@app.route('/get_data', methods=['GET'])
+def get_data():
+    global latest_action
+    return jsonify(latest_action)
 
 if __name__ == '__main__':
     with app.app_context():
