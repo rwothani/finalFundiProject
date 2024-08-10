@@ -8,7 +8,7 @@
     <script>
         setTimeout(function() {
             window.location.reload();
-        }, 2000); // Refresh every 2000 milliseconds (2 seconds)
+        }, 7000); // Refresh every 2000 milliseconds (2 seconds)
     </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
@@ -53,7 +53,9 @@
 
     <div class="container">
 
-        
+        <div class="print-button">
+            <button onclick="printTable()"style="color: #f58320; border: 2px solid #f58320; background-color: white; padding: 10px 20px; font-size: 16px; cursor: pointer;">Print</button>
+        </div>
         <h1>Attendance Log</h1>
 
         <!-- Search Form -->
@@ -120,9 +122,7 @@
     <!-- <div class="print-button">
         <button onclick="window.print()">Print</button>
     </div> -->
-    <div class="print-button">
-        <button onclick="printTable()">Print</button>
-    </div>
+    
     <script>
         function printTable() {
             const usersDiv = document.getElementById('users');
